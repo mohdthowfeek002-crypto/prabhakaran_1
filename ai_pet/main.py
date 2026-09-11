@@ -11,6 +11,9 @@ import dotenv
 dotenv_path = Path(__file__).resolve().with_name(".env")
 dotenv.load_dotenv(dotenv_path)
 
+image_path = os.getenv("photo")
+
+
 api_key = os.getenv("GEMINI_API_KEY") or os.getenv("api_key")
 if not api_key:
     raise RuntimeError(f"No API key found. Create {dotenv_path} with GEMINI_API_KEY=your_key_here")
@@ -150,7 +153,7 @@ class AmmavanPet(QWidget):
         
         from PyQt6.QtGui import QPixmap
         self.sprite = QLabel()
-        image_path = r"C:\Users\Haris\tinkerhub\prabhakaran_avtr-removebg-preview.png"
+        
         
         pixmap = QPixmap(image_path)
         scaled_pixmap = pixmap.scaled(
@@ -175,14 +178,12 @@ class AmmavanPet(QWidget):
         self.hide_timer = QTimer(self)
         self.hide_timer.setSingleShot(True)
         self.hide_timer.timeout.connect(self.speech_bubble.hide)
-        
     def judge_screen(self):
         if not self.speech_bubble.isHidden():
             return  
             
         active_window = get_active_window_title()
         
-        # Specific sites placed first so they trigger before generic browser titles
         safe_targets = [
             "youtube", "netflix", "amazon", "instagram", "steam", "code",
             "file explorer", "explorer",
@@ -200,6 +201,11 @@ class AmmavanPet(QWidget):
             
         self.last_judged_window = found_target
         
+        # --- PREVENT THREAD GARBAGE COLLECTION BUG ---
+        # Stop/cleanup existing worker if it's running
+        if hasattr(self, 'brain') and self.brain.isRunning():
+            self.brain.wait()
+
         self.brain = AIBrainThread(found_target) 
         self.brain.response_ready.connect(self.speak)
         self.brain.start()
