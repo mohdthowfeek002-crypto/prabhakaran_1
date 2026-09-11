@@ -1,22 +1,85 @@
+import os
 import sys
 import ctypes
+import random
+from pathlib import Path
+from google import genai
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtCore import Qt, QTimer, QThread, pyqtSignal
+import dotenv
 
-# Dictionary mapping keywords to Ammavan's quotes
-AMMAVAN_LOGIC = {
-    "youtube": " youtube  kaanukayano? ninek ithinathinn paisa kitto?",
-    "netflix": "Padikkan ulla time il cinema kaanunno? Oru collector aavan ullathalle?",
-    "code": "Rathri urangande? Kannu kedu varum. Ithaanu ee computer-inte oru kozhappam.",
-    "terminal": "Rathri urangande? Kannu kedu varum. Ithaanu ee computer-inte oru kozhappam.",
-    "steam": "Valya pillarayille, iniyum ithum kalich nadakkuvaano? Vallathum vallavarkum upakarapedunna karyam cheythoode?",
-    "amazon": "Cash onnum illelum chilavakkalinu oru kuravum illa. Nammude kaalathokke...",
-    "flipkart": "Cash onnum illelum chilavakkalinu oru kuravum illa. Nammude kaalathokke..."
+dotenv_path = Path(__file__).resolve().with_name(".env")
+dotenv.load_dotenv(dotenv_path)
+
+api_key = os.getenv("GEMINI_API_KEY") or os.getenv("api_key")
+if not api_key:
+    raise RuntimeError(f"No API key found. Create {dotenv_path} with GEMINI_API_KEY=your_key_here")
+
+# 1. SETUP THE AI CLIENT
+client = genai.Client(api_key=api_key)
+
+BROWSER_QUOTES = [
+    "Net-il ingane veruthe thappi samayam kalayukayano? Vallathum upakarapedunnath nokkeda!",
+    "Enthra tab-ukal aanu thurannu vechirikkunne! RAM motham theerkkum, computer kedu varum.",
+    "Google-il entharanu ithra thappan ullath? Pusthakam thurannu vaayikkeda!",
+    "Browser-il kidannu veruthe scrolling... oru bodhavum illa!"
+]
+
+EXPLORER_QUOTES = [
+    "Folder-ukal anganum inganum aakki enthu search cheyyuva? File-ukal polum vrithikku vekkan ariyilla!",
+    "Athil entha ithra thappan ullath? Veettile alamaara ithupole eppozhenkilum vrithiyaakkiyo?",
+    "Enthokkeyo file thappi nadakkunnu... vallathum padikkan ullath undo athil?",
+    "Ee folder motham kalapila aayi kidakkunnu. Nammude kaalathokke file vrithikku ketti vekkumaayirunnu."
+]
+
+FALLBACK_QUOTES = {
+    "youtube": [
+        "YouTube-il video kandu irunno... oru collector aavan vendi padikkan ullathalle?",
+        "Ivide irunnu video kandu samayam kalayathe poyi vallathum padikku!",
+        "YouTube kaanukayano? Ninakku ithinakathunnu paisa vallathum kitto?"
+    ],
+    "netflix": [
+        "Cinema kandu jeevitham kalayukayano? Nammude kaalathonnum ingane samayam kalayan pattillayirunnu.",
+        "Series theerkkanaano ithra thidukkam? Pusthakam thurannu nokkeda!",
+        "Padikkan ulla time il cinema kaanunno? Naattukar enthu parayum!"
+    ],
+    "code": [
+        "Rathri urangande? Kannu kedu varum. Ithaanu ee computer-inte oru kozhappam.",
+        "Code adichu adichu oru vazhikkaayi. Vallathum labhamundo ithukondu?",
+        "Enneravum ee tharakkathanathil thanne irunno... valla velichathilum irangikkoode?"
+    ],
+    "steam": [
+        "Valiya kutti aayille, iniyum ithum kalichu nadakkuvaano? Vallavarkkum upakarapedunna karyam cheythoode?",
+        "Game kalichu irunno, naale kalyana karyam parayumbol thala thaazhthi nilkendi varum.",
+        "Padutham onnum ille? Computer game kalikkan maathram nalla thidukkam."
+    ],
+    "amazon": [
+        "Cash onnum illelum chilavakkalinu oru kuravum illa. Nammude kaalathokke...",
+        "Online shopping cheythu veettile paisa motham theerkkuvaano?",
+        "Avashyamillatha sadhanam vangikootan aano nee padikkunne?"
+    ],
+    "instagram": [
+        "Reels kandu kandu jeevitham theerkkumo nee? Naalathe karyam aalochikkunnundo?",
+        "Aarkko like koduthu samayam kalayunnu... poyi valla joli cheyyeda!",
+        "Phone-ilum computer-ilum reels thanne pani... oru bodhavum illa."
+    ],
+    # Browsers
+    "chrome": BROWSER_QUOTES,
+    "firefox": BROWSER_QUOTES,
+    "edge": BROWSER_QUOTES,
+    "brave": BROWSER_QUOTES,
+    # File Explorer
+    "file explorer": EXPLORER_QUOTES,
+    "explorer": EXPLORER_QUOTES,
+    "default": [
+        "Ee computer nokki samayam kalayathe valla nalla karyangalum cheythoode?",
+        "Padikkan ulla samayathu ithokke aano cheyyunne? Naattukar enthu parayum!",
+        "Enthokkeya ee computeril nadakkunne... onnum manassilavunnilla."
+    ]
 }
 
 def get_active_window_title():
     try:
-        # Talks directly to the Windows API to get the frontmost window
         hwnd = ctypes.windll.user32.GetForegroundWindow()
         length = ctypes.windll.user32.GetWindowTextLengthW(hwnd)
         buf = ctypes.create_unicode_buffer(length + 1)
@@ -25,13 +88,41 @@ def get_active_window_title():
     except Exception:
         return ""
 
+# 2. THE BACKGROUND WORKER
+class AIBrainThread(QThread):
+    response_ready = pyqtSignal(str)
+    
+    def __init__(self, target_app):
+        super().__init__()
+        self.target_app = target_app
+        
+    def run(self):
+        try:
+            prompt = f"""
+            You are a stereotypical, highly judgmental Kerala Ammavan. 
+            I just opened a computer application related to '{self.target_app}'. 
+            Give a short, funny, sarcastic, passive-aggressive comment judging me for using it. 
+            Respond ONLY in Manglish (Malayalam written in English letters). 
+            Do not use English translations. Keep it short, maximum 2 sentences.
+            """
+            
+            chat = client.chats.create(model="gemini-2.5-flash")
+            response = chat.send_message(prompt)          
+            self.response_ready.emit(response.text.strip().replace('"', ''))
+            
+        except Exception as e:
+            print(f"API Failed ({e}), switching to offline fallback.")
+            quotes_pool = FALLBACK_QUOTES.get(self.target_app, FALLBACK_QUOTES["default"])
+            chosen_quote = random.choice(quotes_pool)
+            self.response_ready.emit(chosen_quote)
+
 class AmmavanPet(QWidget):
     def __init__(self):
         super().__init__()
+        self.last_judged_window = ""
         self.initUI()
         
     def initUI(self):
-        # 1. Setup Frameless, Always-on-Top, and Transparent Window
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint | 
             Qt.WindowType.WindowStaysOnTopHint | 
@@ -41,7 +132,6 @@ class AmmavanPet(QWidget):
         
         layout = QVBoxLayout()
         
-        # 2. Setup Speech Bubble
         self.speech_bubble = QLabel("")
         self.speech_bubble.setWordWrap(True)
         self.speech_bubble.setStyleSheet("""
@@ -58,40 +148,29 @@ class AmmavanPet(QWidget):
         """)
         self.speech_bubble.hide()
         
-        # 3. Setup Ammavan Sprite
-          # 3. Setup Ammavan Sprite
         from PyQt6.QtGui import QPixmap
-        
         self.sprite = QLabel()
         image_path = r"C:\Users\Haris\tinkerhub\prabhakaran_avtr-removebg-preview.png"
         
-        # Load the original image
         pixmap = QPixmap(image_path)
-        
-        # Resize the image (change 150, 150 to whatever size you want)
         scaled_pixmap = pixmap.scaled(
             150, 150, 
             Qt.AspectRatioMode.KeepAspectRatio, 
             Qt.TransformationMode.SmoothTransformation
         )
-        
         self.sprite.setPixmap(scaled_pixmap)
         self.sprite.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-       
         
         layout.addWidget(self.speech_bubble)
         layout.addWidget(self.sprite)
         self.setLayout(layout)
         
-        # Move window to bottom right corner of the primary screen
         screen = QApplication.primaryScreen().geometry()
         self.setGeometry(screen.width() - 250, screen.height() - 350, 200, 300)
         
-        # 4. Timers for Logic
         self.watch_timer = QTimer(self)
         self.watch_timer.timeout.connect(self.judge_screen)
-        self.watch_timer.start(3000)  # Check the active window every 3 seconds
+        self.watch_timer.start(4000) 
         
         self.hide_timer = QTimer(self)
         self.hide_timer.setSingleShot(True)
@@ -99,24 +178,38 @@ class AmmavanPet(QWidget):
         
     def judge_screen(self):
         if not self.speech_bubble.isHidden():
-            return  # Let him finish talking first
+            return  
             
         active_window = get_active_window_title()
-        if not active_window:
+        
+        # Specific sites placed first so they trigger before generic browser titles
+        safe_targets = [
+            "youtube", "netflix", "amazon", "instagram", "steam", "code",
+            "file explorer", "explorer",
+            "chrome", "firefox", "edge", "brave"
+        ]
+        
+        found_target = None
+        for target in safe_targets:
+            if target in active_window:
+                found_target = target
+                break
+                
+        if not found_target or found_target == self.last_judged_window:
             return
             
-        for keyword, quote in AMMAVAN_LOGIC.items():
-            if keyword in active_window:
-                self.speak(quote)
-                break
+        self.last_judged_window = found_target
+        
+        self.brain = AIBrainThread(found_target) 
+        self.brain.response_ready.connect(self.speak)
+        self.brain.start()
                 
     def speak(self, text):
         self.speech_bubble.setText(text)
         self.speech_bubble.show()
-        self.hide_timer.start(7000)  # Make the speech bubble disappear after 7 seconds
+        self.hide_timer.start(8000) 
         
     def mousePressEvent(self, event):
-        # Bonus: Poke the Ammavan
         if event.button() == Qt.MouseButton.LeftButton:
             self.speak("Enne thodathe, enikku vere paniyund!")
 
