@@ -5,14 +5,23 @@ import random
 from pathlib import Path
 from google import genai
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout
-from PyQt6.QtCore import Qt, QTimer, QThread, pyqtSignal
+from PyQt6.QtCore import Qt, QTimer, QThread, pyqtSignal, QPoint, QSize
+from PyQt6.QtGui import QMovie
 import dotenv
 
 dotenv_path = Path(__file__).resolve().with_name(".env")
 dotenv.load_dotenv(dotenv_path)
 
-image_path = os.getenv("photo")
-
+# Load different GIF paths from .env
+default_photo = os.getenv("photo")
+IMAGE_PATHS = {
+    "standing": os.getenv("standing", default_photo),
+    "walking_left": os.getenv("walking_left", default_photo),
+    "walking_right": os.getenv("walking_right", default_photo),
+    "peeing": os.getenv("peeing", default_photo),
+    "sleeping": os.getenv("sleeping", default_photo),
+    "reading": os.getenv("reading", default_photo),
+}
 
 api_key = os.getenv("GEMINI_API_KEY") or os.getenv("api_key")
 if not api_key:
@@ -66,12 +75,10 @@ FALLBACK_QUOTES = {
         "Aarkko like koduthu samayam kalayunnu... poyi valla joli cheyyeda!",
         "Phone-ilum computer-ilum reels thanne pani... oru bodhavum illa."
     ],
-    # Browsers
     "chrome": BROWSER_QUOTES,
     "firefox": BROWSER_QUOTES,
     "edge": BROWSER_QUOTES,
     "brave": BROWSER_QUOTES,
-    # File Explorer
     "file explorer": EXPLORER_QUOTES,
     "explorer": EXPLORER_QUOTES,
     "default": [
@@ -91,7 +98,6 @@ def get_active_window_title():
     except Exception:
         return ""
 
-# 2. THE BACKGROUND WORKER
 class AIBrainThread(QThread):
     response_ready = pyqtSignal(str)
     
@@ -108,11 +114,9 @@ class AIBrainThread(QThread):
             Respond ONLY in Manglish (Malayalam written in English letters). 
             Do not use English translations. Keep it short, maximum 2 sentences.
             """
-            
             chat = client.chats.create(model="gemini-2.5-flash")
-            response = chat.send_message(prompt)          
+            response = chat.send_message(prompt)           
             self.response_ready.emit(response.text.strip().replace('"', ''))
-            
         except Exception as e:
             print(f"API Failed ({e}), switching to offline fallback.")
             quotes_pool = FALLBACK_QUOTES.get(self.target_app, FALLBACK_QUOTES["default"])
@@ -123,6 +127,11 @@ class AmmavanPet(QWidget):
     def __init__(self):
         super().__init__()
         self.last_judged_window = ""
+        self.screen_geo = QApplication.primaryScreen().geometry()
+        self.direction = 1  # 1 for moving right, -1 for moving left
+        self.target_x = None  
+        self.dragging = False
+        self.drag_position = QPoint()
         self.initUI()
         
     def initUI(self):
@@ -142,35 +151,28 @@ class AmmavanPet(QWidget):
                 background-color: white;
                 border: 2px solid #333;
                 border-radius: 10px;
-                padding: 12px;
+                padding: 10px;
                 font-family: Arial;
-                font-size: 13px;
+                font-size: 11px;
                 font-weight: bold;
                 color: #333;
             }
         """)
         self.speech_bubble.hide()
         
-        from PyQt6.QtGui import QPixmap
         self.sprite = QLabel()
-        
-        
-        pixmap = QPixmap(image_path)
-        scaled_pixmap = pixmap.scaled(
-            150, 150, 
-            Qt.AspectRatioMode.KeepAspectRatio, 
-            Qt.TransformationMode.SmoothTransformation
-        )
-        self.sprite.setPixmap(scaled_pixmap)
         self.sprite.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         layout.addWidget(self.speech_bubble)
         layout.addWidget(self.sprite)
         self.setLayout(layout)
         
-        screen = QApplication.primaryScreen().geometry()
-        self.setGeometry(screen.width() - 250, screen.height() - 350, 200, 300)
+        # Medium-small sizing
+        self.setGeometry(self.screen_geo.width() - 200, self.screen_geo.height() - 280, 150, 220)
         
+        self.set_animation("standing")
+        
+        # Timers
         self.watch_timer = QTimer(self)
         self.watch_timer.timeout.connect(self.judge_screen)
         self.watch_timer.start(4000) 
@@ -178,10 +180,77 @@ class AmmavanPet(QWidget):
         self.hide_timer = QTimer(self)
         self.hide_timer.setSingleShot(True)
         self.hide_timer.timeout.connect(self.speech_bubble.hide)
-    def judge_screen(self):
-        if not self.speech_bubble.isHidden():
-            return  
+        
+        # Idle behavior timer
+        self.idle_timer = QTimer(self)
+        self.idle_timer.timeout.connect(self.trigger_random_idle_behavior)
+        self.idle_timer.start(20000) 
+
+        # Movement timer for walking animations
+        self.move_timer = QTimer(self)
+        self.move_timer.timeout.connect(self.update_position)
+
+    def set_animation(self, state_name):
+        path = IMAGE_PATHS.get(state_name, default_photo)
+        if not path or not os.path.exists(path):
+            return
             
+        if hasattr(self, 'current_movie') and self.current_movie:
+            self.current_movie.stop()
+            
+        self.current_movie = QMovie(path)
+        self.current_movie.setScaledSize(QSize(96, 96))
+        self.sprite.setMovie(self.current_movie)
+        self.current_movie.start()
+
+    def trigger_random_idle_behavior(self):
+        if not self.speech_bubble.isHidden() or self.dragging:
+            return
+
+        behaviors = ["walking_left", "walking_right", "peeing", "sleeping", "reading"]
+        chosen = random.choice(behaviors)
+
+        if chosen == "walking_left":
+            self.direction = -1
+            self.target_x = random.randint(0, self.screen_geo.width() // 2)
+            self.set_animation("walking_left")
+            self.move_timer.start(40)
+        elif chosen == "walking_right":
+            self.direction = 1
+            self.target_x = random.randint(self.screen_geo.width() // 2, self.screen_geo.width() - self.width())
+            self.set_animation("walking_right")
+            self.move_timer.start(40)
+        else:
+            self.move_timer.stop()
+            self.set_animation(chosen)
+            # Stay in this pose for at least 20 seconds
+            QTimer.singleShot(20000, lambda: self.reset_to_standing_if_idle())
+
+    def update_position(self):
+        current_pos = self.pos()
+        new_x = current_pos.x() + (self.direction * 4)
+        
+        reached_target = False
+        if self.direction == 1:
+            if new_x >= self.screen_geo.width() - self.width() or (self.target_x is not None and new_x >= self.target_x):
+                reached_target = True
+        else:
+            if new_x <= 0 or (self.target_x is not None and new_x <= self.target_x):
+                reached_target = True
+
+        if reached_target:
+            self.move_timer.stop()
+            self.target_x = None
+            self.set_animation("standing")
+        else:
+            self.move(new_x, current_pos.y())
+
+    def reset_to_standing_if_idle(self):
+        if self.speech_bubble.isHidden() and not self.dragging:
+            self.move_timer.stop()
+            self.set_animation("standing")
+
+    def judge_screen(self):
         active_window = get_active_window_title()
         
         safe_targets = [
@@ -201,8 +270,9 @@ class AmmavanPet(QWidget):
             
         self.last_judged_window = found_target
         
-        # --- PREVENT THREAD GARBAGE COLLECTION BUG ---
-        # Stop/cleanup existing worker if it's running
+        self.move_timer.stop()
+        self.set_animation("standing")
+        
         if hasattr(self, 'brain') and self.brain.isRunning():
             self.brain.wait()
 
@@ -211,16 +281,34 @@ class AmmavanPet(QWidget):
         self.brain.start()
                 
     def speak(self, text):
+        self.move_timer.stop()
+        self.set_animation("standing")
         self.speech_bubble.setText(text)
         self.speech_bubble.show()
         self.hide_timer.start(8000) 
         
+    # --- MOUSE DRAGGING OVERRIDES ---
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
-            self.speak("Enne thodathe, enikku vere paniyund!")
+            self.dragging = True
+            self.drag_position = event.globalPosition().toPoint() - self.frameGeometry().topLeft()
+            self.move_timer.stop()
+            self.speak("videda enne")
+            event.accept()
+
+    def mouseMoveEvent(self, event):
+        if self.dragging:
+            self.move(event.globalPosition().toPoint() - self.drag_position)
+            event.accept()
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.dragging = False
+            event.accept()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     pet = AmmavanPet()
     pet.show()
     sys.exit(app.exec())
+    
