@@ -12,23 +12,24 @@ import dotenv
 dotenv_path = Path(__file__).resolve().with_name(".env")
 dotenv.load_dotenv(dotenv_path)
 
-# Load different GIF paths from .env
-default_photo = os.getenv("photo")
+# --- CONFIGURATION & PATHS (Moved to top so they load before class initialization) ---
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("api_key")
+default_photo = os.getenv("photo", "C:/Users/jeeva/Videos/Camera HD/tinkerhub/prabhakaran_avtr.png")
+
 IMAGE_PATHS = {
-    "standing": os.getenv("standing", default_photo),
-    "walking_left": os.getenv("walking_left", default_photo),
-    "walking_right": os.getenv("walking_right", default_photo),
-    "peeing": os.getenv("peeing", default_photo),
-    "sleeping": os.getenv("sleeping", default_photo),
-    "reading": os.getenv("reading", default_photo),
+    "standing": os.getenv("standing", "C:/Users/jeeva/Videos/Camera HD/tinkerhub/animations/standing.gif"),
+    "walking_left": os.getenv("walking_left", "C:/Users/jeeva/Videos/Camera HD/tinkerhub/animations/leftwalk.gif"),
+    "walking_right": os.getenv("walking_right", "C:/Users/jeeva/Videos/Camera HD/tinkerhub/animations/rightwalk.gif"),
+    "peeing": os.getenv("peeing", "C:/Users/jeeva/Videos/Camera HD/tinkerhub/animations/urine.gif"),
+    "sleeping": os.getenv("sleeping", "C:/Users/jeeva/Videos/Camera HD/tinkerhub/animations/sleep.gif"),
+    "reading": os.getenv("reading", "C:/Users/jeeva/Videos/Camera HD/tinkerhub/animations/reading.gif"),
 }
 
-api_key = os.getenv("GEMINI_API_KEY") or os.getenv("api_key")
-if not api_key:
+if not GEMINI_API_KEY:
     raise RuntimeError(f"No API key found. Create {dotenv_path} with GEMINI_API_KEY=your_key_here")
 
 # 1. SETUP THE AI CLIENT
-client = genai.Client(api_key=api_key)
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 BROWSER_QUOTES = [
     "Net-il ingane veruthe thappi samayam kalayukayano? Vallathum upakarapedunnath nokkeda!",
@@ -115,7 +116,7 @@ class AIBrainThread(QThread):
             Do not use English translations. Keep it short, maximum 2 sentences.
             """
             chat = client.chats.create(model="gemini-2.5-flash")
-            response = chat.send_message(prompt)           
+            response = chat.send_message(prompt)          
             self.response_ready.emit(response.text.strip().replace('"', ''))
         except Exception as e:
             print(f"API Failed ({e}), switching to offline fallback.")
@@ -132,6 +133,7 @@ class AmmavanPet(QWidget):
         self.target_x = None  
         self.dragging = False
         self.drag_position = QPoint()
+        self.current_movie = None
         self.initUI()
         
     def initUI(self):
@@ -167,7 +169,7 @@ class AmmavanPet(QWidget):
         layout.addWidget(self.sprite)
         self.setLayout(layout)
         
-        # Medium-small sizing
+        # Initial widget placement (bottom right)
         self.setGeometry(self.screen_geo.width() - 200, self.screen_geo.height() - 280, 150, 220)
         
         self.set_animation("standing")
@@ -193,9 +195,10 @@ class AmmavanPet(QWidget):
     def set_animation(self, state_name):
         path = IMAGE_PATHS.get(state_name, default_photo)
         if not path or not os.path.exists(path):
+            print(f"Warning: Animation file missing for '{state_name}' at path: {path}")
             return
             
-        if hasattr(self, 'current_movie') and self.current_movie:
+        if self.current_movie:
             self.current_movie.stop()
             
         self.current_movie = QMovie(path)
@@ -223,7 +226,7 @@ class AmmavanPet(QWidget):
         else:
             self.move_timer.stop()
             self.set_animation(chosen)
-            # Stay in this pose for at least 20 seconds
+            # Stay in this pose for 20 seconds before checking to return to standing
             QTimer.singleShot(20000, lambda: self.reset_to_standing_if_idle())
 
     def update_position(self):
@@ -311,4 +314,3 @@ if __name__ == '__main__':
     pet = AmmavanPet()
     pet.show()
     sys.exit(app.exec())
-    
