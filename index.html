@@ -1,1 +1,650 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portable Ammavan (AaaS: Ammavan-as-a-Service) | Showcase</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Inter, Plus Jakarta Sans, Fira Code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            kasavu: '#FAF7F0',       /* Traditional Kerala Kasavu Ivory */
+            munduGold: '#D4AF37',    /* Kasavu border gold */
+            munduGoldDark: '#B89025',
+            ammavanBrown: '#3A2012', /* Traditional Kerala teak/cigar tone */
+            chaiOrange: '#E65100',   /* Piping hot tea stall orange */
+            parottaIvory: '#F4ECE1',
+            slateDark: '#1E1E24'
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+            quote: ['Playfair Display', 'serif']
+          },
+          boxShadow: {
+            'brutal': '5px 5px 0px 0px rgba(58, 32, 18, 1)',
+            'brutal-sm': '3px 3px 0px 0px rgba(58, 32, 18, 1)',
+            'brutal-lg': '8px 8px 0px 0px rgba(58, 32, 18, 1)',
+            'brutal-hover': '2px 2px 0px 0px rgba(58, 32, 18, 1)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom subtle paper-grain feel and typewriter pulse */
+    .bg-grid-pattern {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(212, 175, 55, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(212, 175, 55, 0.08) 1px, transparent 1px);
+    }
+    .tape-badge {
+      background: #FDF4DC;
+      transform: rotate(-1.5deg);
+      box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+    }
+    @keyframes bobble {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-6px) rotate(2deg); }
+    }
+    .animate-ammavan {
+      animation: bobble 3s ease-in-out infinite;
+    }
+  </style>
+</head>
+
+<body class="bg-kasavu text-ammavanBrown font-sans antialiased bg-grid-pattern selection:bg-munduGold selection:text-white">
+
+  <nav class="sticky top-0 z-50 bg-kasavu/90 backdrop-blur-md border-b-2 border-ammavanBrown px-6 py-3.5 transition-all">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-amber-100 border-2 border-ammavanBrown flex items-center justify-center text-xl shadow-brutal-sm group-hover:-translate-y-0.5 transition-transform">
+          👴🏽
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg md:text-xl tracking-tight text-ammavanBrown">Portable Ammavan</span>
+            <span class="text-[10px] font-mono font-bold bg-chaiOrange/15 text-chaiOrange px-2 py-0.5 rounded-full border border-chaiOrange/30">AaaS v1.0</span>
+          </div>
+          <p class="text-[11px] text-zinc-600 font-mono tracking-wide hidden sm:block">Ammavan-as-a-Service • Realtime Judgment System</p>
+        </div>
+      </a>
+
+      <!-- Quick Section Anchor Links -->
+      <div class="flex items-center gap-2 md:gap-6 text-sm font-bold">
+        <a href="#demo-video" class="px-3 py-1.5 rounded-lg hover:bg-amber-100/70 text-ammavanBrown transition flex items-center gap-1.5">
+          <i class="fa-solid fa-play text-chaiOrange text-xs"></i> <span>Video Demo</span>
+        </a>
+        <a href="#simulator" class="px-3 py-1.5 rounded-lg hover:bg-amber-100/70 text-ammavanBrown transition hidden sm:flex items-center gap-1.5">
+          <i class="fa-solid fa-wand-magic-sparkles text-munduGoldDark text-xs"></i> <span>Roast Simulator</span>
+        </a>
+        <a href="#features" class="px-3 py-1.5 rounded-lg hover:bg-amber-100/70 text-ammavanBrown transition hidden md:flex items-center gap-1.5">
+          <i class="fa-solid fa-layer-group text-xs"></i> <span>Features</span>
+        </a>
+        <a href="#credits" class="px-3 py-1.5 rounded-lg bg-ammavanBrown text-kasavu text-xs font-mono uppercase tracking-wider shadow-brutal-sm hover:translate-x-0.5 hover:translate-y-0.5 transition">
+          Credits
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-6 pt-12 md:pt-16 pb-20">
+    
+    <div class="text-center max-w-4xl mx-auto space-y-6">
+      <!-- Event pill -->
+      <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border-2 border-ammavanBrown bg-white shadow-brutal-sm">
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-chaiOrange animate-pulse"></span>
+        <span class="text-xs font-mono font-bold text-ammavanBrown uppercase tracking-wider">
+          TinkerHub Useless Projects 3.0 Showcase
+        </span>
+      </div>
+
+      <!-- Headline -->
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-ammavanBrown leading-[1.1]">
+        Suffering from zero unsolicited <br class="hidden sm:block" />
+        <span class="relative inline-block text-chaiOrange italic font-quote px-2">
+          family judgment?
+          <svg class="absolute -bottom-2 left-0 w-full" height="10" viewBox="0 0 200 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 5.5C40 2 160 2 199 5.5" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </span>
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="text-lg md:text-xl text-zinc-700 max-w-2xl mx-auto font-normal leading-relaxed">
+        Meet <strong>Portable Ammavan</strong>: a transparent, draggable Win32 desktop companion powered by Gemini AI that monitors your active windows in real-time and relentlessly roasts your life decisions in authentic Manglish.
+      </p>
+
+      <!-- Quick Status Badges -->
+      <div class="pt-2 flex flex-wrap justify-center items-center gap-3 text-xs font-mono">
+        <span class="px-3 py-1 bg-amber-100/80 border border-munduGold rounded-md text-amber-900 font-semibold">
+          👀 Win32 Taskbar Prowler
+        </span>
+        <span class="px-3 py-1 bg-orange-100/80 border border-chaiOrange/40 rounded-md text-orange-950 font-semibold">
+          ⚡ Google Gemini 2.5 Flash
+        </span>
+        <span class="px-3 py-1 bg-emerald-100/80 border border-emerald-300 rounded-md text-emerald-900 font-semibold">
+          📡 100% Offline Fallback Ready
+        </span>
+      </div>
+    </div>
+
+    <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+      
+      <!-- The Problem Card -->
+      <div class="bg-white p-7 md:p-8 rounded-2xl border-2 border-ammavanBrown shadow-brutal relative overflow-hidden">
+        <div class="absolute -top-3 right-6 px-3 py-1 bg-red-100 border border-red-300 rounded-md text-[11px] font-mono font-bold text-red-700 tracking-wider">
+          THE CRITICAL CRISIS
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-red-50 border-2 border-red-200 flex items-center justify-center text-2xl mb-4">
+          🕊️
+        </div>
+        <h2 class="text-xl font-extrabold text-ammavanBrown tracking-tight">The Problem (That Doesn't Exist)</h2>
+        <p class="text-zinc-600 text-sm mt-3 leading-relaxed">
+          College students staying in hostels, PGs, and shared apartments across Kerala live in an unnatural, perilous state of inner calm. Without a nosy uncle lurking over their shoulders to ask:
+        </p>
+        <div class="mt-4 p-4 rounded-xl bg-amber-50/70 border-l-4 border-chaiOrange font-quote italic text-base text-ammavanBrown">
+          “Padutham okke engane ponu? Night 2:30 AM vare light kathichu vechu Netflix kandal backlog ezhuthi theerumo?!”
+        </div>
+        <p class="text-zinc-600 text-xs mt-3">
+          Students risk developing toxic levels of unbothered happiness and unpunished leisure.
+        </p>
+      </div>
+
+      <!-- The Solution Card -->
+      <div class="bg-parottaIvory p-7 md:p-8 rounded-2xl border-2 border-ammavanBrown shadow-brutal relative overflow-hidden">
+        <div class="absolute -top-3 right-6 px-3 py-1 bg-emerald-100 border border-emerald-300 rounded-md text-[11px] font-mono font-bold text-emerald-800 tracking-wider">
+          THE ENGINEERING FEAT
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-amber-100 border-2 border-munduGold flex items-center justify-center text-2xl mb-4">
+          🎯
+        </div>
+        <h2 class="text-xl font-extrabold text-ammavanBrown tracking-tight">The Solution (Nobody Asked For)</h2>
+        <p class="text-zinc-600 text-sm mt-3 leading-relaxed">
+          We built a transparent, frameless desktop surveillance relative right on your screen. He walks along your taskbar, falls asleep if your cursor goes idle, gets furious if you try to drag him across your monitor, and pipes window titles directly to Gemini LLM for comic-style typewriter scoldings.
+        </p>
+        <ul class="mt-4 space-y-2 text-xs font-mono text-zinc-700">
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-chaiOrange"></i> Frameless, translucent PyQt6 desktop overlay</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-chaiOrange"></i> Native Win32 API cursor and window inspection</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-chaiOrange"></i> Zero-latency dynamic speech bubble typewriter</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <section id="demo-video" class="mt-20 scroll-mt-24">
+      <div class="bg-slateDark text-kasavu p-6 sm:p-10 rounded-3xl border-3 border-ammavanBrown shadow-brutal-lg relative">
+        
+        <!-- Video Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between pb-6 mb-6 border-b border-zinc-800 gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 text-xs font-mono text-munduGold font-bold uppercase tracking-wider mb-2">
+              <span class="w-2 h-2 rounded-full bg-munduGold"></span> Live Companion Demonstration
+            </div>
+            <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+              Surveillance Footage in Action
+            </h2>
+          </div>
+          <p class="text-zinc-400 text-xs sm:text-sm max-w-md font-normal leading-relaxed">
+            Observing Ammavan detecting active windows, dozing off on idle cursor, complaining in typewriter Manglish, and entering rage mode upon being dragged.
+          </p>
+        </div>
+
+        <!-- Video Player Display Container (16:9 Aspect Ratio) -->
+        <div class="w-full aspect-video rounded-2xl overflow-hidden bg-black/90 border-2 border-zinc-700 shadow-2xl relative group">
+          
+          <!-- Embedded Video Player -->
+          <!-- Note: Configured with custom controls, plays demo stream or fallback placeholder -->
+          <iframe 
+            id="demoVideoIframe"
+            class="w-full h-full object-cover"
+            src="https://www.youtube-nocookie.com/embed/-hislmFl6AI"
+            title="Portable Ammavan Project Demo Showcase" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+          </iframe>
+
+          <!-- Fallback or Direct Stream Overlay Ribbon -->
+          <div class="absolute bottom-3 right-3 bg-zinc-900/90 text-zinc-300 backdrop-blur-md px-3 py-1 rounded-md text-[11px] font-mono border border-zinc-700 pointer-events-none flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+            <span>Recorded Live on Windows 11</span>
+          </div>
+        </div>
+
+        <!-- Video Highlights Ticker below screen -->
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-xs font-mono">
+          <div class="p-3 rounded-xl bg-zinc-900/90 border border-zinc-800 flex items-start gap-3">
+            <span class="text-lg">👀</span>
+            <div>
+              <p class="font-bold text-munduGold">Foreground Detection</p>
+              <p class="text-zinc-400 text-[11px] mt-0.5">Captures window titles in realtime via user32.dll</p>
+            </div>
+          </div>
+          <div class="p-3 rounded-xl bg-zinc-900/90 border border-zinc-800 flex items-start gap-3">
+            <span class="text-lg">💤</span>
+            <div>
+              <p class="font-bold text-amber-200">Idle Sleep State</p>
+              <p class="text-zinc-400 text-[11px] mt-0.5">Dozes off after 30 seconds without mouse movement</p>
+            </div>
+          </div>
+          <div class="p-3 rounded-xl bg-zinc-900/90 border border-zinc-800 flex items-start gap-3">
+            <span class="text-lg">😡</span>
+            <div>
+              <p class="font-bold text-red-400">Drag Rage Engine</p>
+              <p class="text-zinc-400 text-[11px] mt-0.5">Instant sprite flip and "Videda enne!" scolding</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="simulator" class="mt-24 scroll-mt-24">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="text-xs font-mono uppercase tracking-widest font-extrabold text-chaiOrange bg-orange-100 border border-orange-200 px-3 py-1 rounded-full">
+          Interactive Ammavan Sandbox
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-ammavanBrown mt-3">
+          Experience The Judgment Live
+        </h2>
+        <p class="text-sm text-zinc-600 mt-2">
+          Click any student scenario below to simulate how Portable Ammavan’s state machine and Gemini scolding engine react.
+        </p>
+      </div>
+
+      <!-- Simulator Interactive Box -->
+      <div class="bg-white rounded-3xl border-3 border-ammavanBrown shadow-brutal p-6 md:p-10 max-w-4xl mx-auto">
+        
+        <!-- Scenario Selector Buttons -->
+        <div class="flex flex-wrap items-center justify-center gap-2 mb-8">
+          <button onclick="setScenario('netflix')" id="btn-netflix" class="sim-btn px-4 py-2 rounded-xl text-xs font-mono font-bold border-2 border-ammavanBrown bg-amber-100 shadow-brutal-sm hover:-translate-y-0.5 transition">
+            🎬 2:00 AM Netflix
+          </button>
+          <button onclick="setScenario('gaming')" id="btn-gaming" class="sim-btn px-4 py-2 rounded-xl text-xs font-mono font-bold border-2 border-ammavanBrown bg-white shadow-brutal-sm hover:-translate-y-0.5 transition">
+            🎮 Valorant / Steam
+          </button>
+          <button onclick="setScenario('drag')" id="btn-drag" class="sim-btn px-4 py-2 rounded-xl text-xs font-mono font-bold border-2 border-ammavanBrown bg-white shadow-brutal-sm hover:-translate-y-0.5 transition">
+            🖱️ Mouse Dragged!
+          </button>
+          <button onclick="setScenario('idle')" id="btn-idle" class="sim-btn px-4 py-2 rounded-xl text-xs font-mono font-bold border-2 border-ammavanBrown bg-white shadow-brutal-sm hover:-translate-y-0.5 transition">
+            😴 30s Cursor Idle
+          </button>
+          <button onclick="setScenario('offline')" id="btn-offline" class="sim-btn px-4 py-2 rounded-xl text-xs font-mono font-bold border-2 border-ammavanBrown bg-white shadow-brutal-sm hover:-translate-y-0.5 transition">
+            🔌 WiFi Disconnected
+          </button>
+        </div>
+
+        <!-- Ammavan Virtual Desktop Stage -->
+        <div class="bg-zinc-100 rounded-2xl border-2 border-ammavanBrown p-6 md:p-8 min-h-[300px] flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden bg-grid-pattern">
+          
+          <!-- Virtual Ammavan Sprite Avatar -->
+          <div class="flex flex-col items-center justify-center text-center">
+            <div id="ammavanSpriteBox" class="w-32 h-32 rounded-2xl bg-white border-2 border-ammavanBrown shadow-brutal flex items-center justify-center text-6xl animate-ammavan transition-all duration-300">
+              👴🏽
+            </div>
+            <div id="ammavanStateBadge" class="mt-3 text-[11px] font-mono font-bold px-2.5 py-1 rounded bg-ammavanBrown text-white shadow-sm">
+              STATE: JUDGING_FOREGROUND
+            </div>
+          </div>
+
+          <!-- Comic Speech Balloon with Typewriter -->
+          <div class="flex-1 w-full">
+            <div class="relative bg-white p-6 rounded-2xl border-2 border-ammavanBrown shadow-brutal">
+              <!-- Speech triangle pointer -->
+              <div class="hidden md:block absolute -left-3 top-8 w-0 h-0 border-t-8 border-t-transparent border-r-[12px] border-r-ammavanBrown border-b-8 border-b-transparent"></div>
+              
+              <!-- Foreground App Detection Header -->
+              <div class="flex items-center justify-between pb-3 mb-3 border-b border-zinc-200">
+                <span id="detectedWindowTag" class="text-[11px] font-mono font-bold text-chaiOrange uppercase">
+                  Window: chrome.exe (Netflix India)
+                </span>
+                <span id="sourceEngineTag" class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">
+                  Gemini 2.5 Flash
+                </span>
+              </div>
+
+              <!-- Animated Speech Body -->
+              <p id="typewriterText" class="text-base sm:text-lg font-quote font-bold text-ammavanBrown min-h-[60px] leading-relaxed">
+                “Raathri 2:30 AM... Netflix aanalle? Ninte appan ithu valla ariyunnundo da shavame? Backlog ezhuthi theerkkan valla planum undo?”
+              </p>
+
+              <!-- English Translation & Cultural Context -->
+              <div class="mt-4 pt-3 border-t border-dashed border-zinc-300 flex items-center justify-between text-xs text-zinc-500">
+                <span id="translationText" class="italic">
+                  Transl: "2:30 AM... Watching Netflix? Does your father know about this? Any plans to clear your backlogs?"
+                </span>
+                <span class="font-mono text-[10px] text-zinc-400 shrink-0 ml-2">Typewriter UI v1.2</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <section id="features" class="mt-24 scroll-mt-24">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <span class="text-xs font-mono uppercase tracking-widest font-extrabold text-munduGoldDark bg-amber-50 border border-munduGold px-3 py-1 rounded-full">
+          Technical Highlights
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-ammavanBrown mt-3">
+          Engineered for Pure Judgment
+        </h2>
+        <p class="text-sm text-zinc-600 mt-2">
+          Combining low-level Windows APIs with large language models to construct the world's most relentless desktop pet.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Feature 1 -->
+        <div class="bg-white p-6 rounded-2xl border-2 border-ammavanBrown shadow-brutal hover:-translate-y-1 transition duration-200">
+          <div class="w-12 h-12 rounded-xl bg-orange-100 border border-orange-200 flex items-center justify-center text-chaiOrange text-xl mb-4">
+            <i class="fa-brands fa-windows"></i>
+          </div>
+          <h3 class="text-lg font-extrabold text-ammavanBrown">Win32 API Taskbar Hook</h3>
+          <p class="text-zinc-600 text-xs sm:text-sm mt-2 leading-relaxed">
+            Utilizes <code class="bg-zinc-100 px-1 py-0.5 rounded text-xs font-mono text-ammavanBrown">ctypes</code> and <code class="bg-zinc-100 px-1 py-0.5 rounded text-xs font-mono text-ammavanBrown">user32.dll</code> to poll active foreground window titles and user cursor coordinates without lagging desktop performance.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="bg-white p-6 rounded-2xl border-2 border-ammavanBrown shadow-brutal hover:-translate-y-1 transition duration-200">
+          <div class="w-12 h-12 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-munduGoldDark text-xl mb-4">
+            <i class="fa-solid fa-brain"></i>
+          </div>
+          <h3 class="text-lg font-extrabold text-ammavanBrown">Gemini 2.5 Flash Roasting</h3>
+          <p class="text-zinc-600 text-xs sm:text-sm mt-2 leading-relaxed">
+            Pipes active process names through targeted prompt engineering to deliver authentic, passive-aggressive Malayali uncle commentary crafted with razor-sharp regional nuance.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="bg-white p-6 rounded-2xl border-2 border-ammavanBrown shadow-brutal hover:-translate-y-1 transition duration-200">
+          <div class="w-12 h-12 rounded-xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-700 text-xl mb-4">
+            <i class="fa-solid fa-wifi"></i>
+          </div>
+          <h3 class="text-lg font-extrabold text-ammavanBrown">Offline Resilience</h3>
+          <p class="text-zinc-600 text-xs sm:text-sm mt-2 leading-relaxed">
+            Hostel WiFi went down? No respite for you. Ammavan switches seamlessly to a local dictionary of classic hardcoded roasts, guaranteeing 24/7 moral supervision through blackouts.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="bg-white p-6 rounded-2xl border-2 border-ammavanBrown shadow-brutal hover:-translate-y-1 transition duration-200">
+          <div class="w-12 h-12 rounded-xl bg-purple-100 border border-purple-300 flex items-center justify-center text-purple-700 text-xl mb-4">
+            <i class="fa-solid fa-ghost"></i>
+          </div>
+          <h3 class="text-lg font-extrabold text-ammavanBrown">Frameless PyQt6 Overlay</h3>
+          <p class="text-zinc-600 text-xs sm:text-sm mt-2 leading-relaxed">
+            Engineered with a translucent canvas and click-through geometry. Paces your taskbar, stands, pees, reads the paper, and sleeps like a genuine house elder.
+          </p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="bg-white p-6 rounded-2xl border-2 border-ammavanBrown shadow-brutal hover:-translate-y-1 transition duration-200">
+          <div class="w-12 h-12 rounded-xl bg-red-100 border border-red-300 flex items-center justify-center text-red-600 text-xl mb-4">
+            <i class="fa-solid fa-hand"></i>
+          </div>
+          <h3 class="text-lg font-extrabold text-ammavanBrown">Drag Rage Dynamics</h3>
+          <p class="text-zinc-600 text-xs sm:text-sm mt-2 leading-relaxed">
+            Try moving him away with your cursor and he immediately halts all gentle pacing, flips into his furious red sprite state, and screams <em>"Videda enne!"</em> across your screen.
+          </p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="bg-white p-6 rounded-2xl border-2 border-ammavanBrown shadow-brutal hover:-translate-y-1 transition duration-200">
+          <div class="w-12 h-12 rounded-xl bg-blue-100 border border-blue-300 flex items-center justify-center text-blue-600 text-xl mb-4">
+            <i class="fa-solid fa-terminal"></i>
+          </div>
+          <h3 class="text-lg font-extrabold text-ammavanBrown">Dynamic Typewriter Bubbles</h3>
+          <p class="text-zinc-600 text-xs sm:text-sm mt-2 leading-relaxed">
+            Dialogue doesn't just appear—it renders character-by-character in an authentic comic speech bubble, emulating the slow, agonizing tempo of an elder's real-life scolding.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="mt-24">
+      <div class="bg-white rounded-3xl border-3 border-ammavanBrown shadow-brutal p-8 md:p-10">
+        <div class="text-center max-w-xl mx-auto mb-8">
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-ammavanBrown">How Ammavan Surveils You</h2>
+          <p class="text-xs sm:text-sm text-zinc-600 mt-1">The internal architecture running beneath the mundu</p>
+        </div>
+
+        <!-- Simple visual diagram flow -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center text-xs font-mono">
+          
+          <div class="p-5 rounded-2xl bg-parottaIvory border-2 border-ammavanBrown flex flex-col items-center justify-center">
+            <span class="text-3xl mb-2">🪟</span>
+            <span class="font-bold text-ammavanBrown text-sm">1. Win32 Hook</span>
+            <span class="text-zinc-500 mt-1 text-[11px]">Polls foreground HWND & window title</span>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-parottaIvory border-2 border-ammavanBrown flex flex-col items-center justify-center">
+            <span class="text-3xl mb-2">🧹</span>
+            <span class="font-bold text-ammavanBrown text-sm">2. Target Sanitizer</span>
+            <span class="text-zinc-500 mt-1 text-[11px]">Filters system noise & whitelist processes</span>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-parottaIvory border-2 border-ammavanBrown flex flex-col items-center justify-center">
+            <span class="text-3xl mb-2">🤖</span>
+            <span class="font-bold text-ammavanBrown text-sm">3. Gemini 2.5 Flash</span>
+            <span class="text-zinc-500 mt-1 text-[11px]">Async QThread generates tailored roast</span>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-parottaIvory border-2 border-ammavanBrown flex flex-col items-center justify-center">
+            <span class="text-3xl mb-2">💬</span>
+            <span class="font-bold text-ammavanBrown text-sm">4. PyQt6 Overlay</span>
+            <span class="text-zinc-500 mt-1 text-[11px]">Translucent typewriter dialog rendered</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="credits" class="mt-24 scroll-mt-24">
+      <div class="bg-parottaIvory rounded-3xl border-3 border-ammavanBrown shadow-brutal-lg p-8 sm:p-12 text-center relative overflow-hidden">
+        
+        <div class="tape-badge inline-block px-4 py-1 border border-amber-300 font-mono text-xs font-bold text-ammavanBrown mb-6">
+          THE BRAINCHILD OF PROCRASTINATION
+        </div>
+
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-ammavanBrown tracking-tight">
+          The Procrastination Police
+        </h2>
+        <p class="text-sm sm:text-base text-zinc-600 max-w-xl mx-auto mt-2">
+          Conceived, designed, and coded during late-night hostel hours at Government Engineering College (GEC) Thrissur.
+        </p>
+
+        <!-- Team Members Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto mt-8 text-left">
+          
+          <!-- Thowfeek -->
+          <div class="bg-white p-5 rounded-2xl border-2 border-ammavanBrown shadow-brutal-sm">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-orange-100 border border-orange-300 flex items-center justify-center text-xl font-bold text-chaiOrange">
+                T
+              </div>
+              <div>
+                <h3 class="font-extrabold text-base text-ammavanBrown">thowfeek</h3>
+                <p class="text-xs font-mono text-zinc-500">Team Lead • GEC Thrissur</p>
+              </div>
+            </div>
+            <p class="text-xs text-zinc-600 mt-3 leading-relaxed">
+              Core pet architecture, PyQt6 transparent GUI engine, Win32 window polling, and Gemini prompt engineering.
+            </p>
+          </div>
+
+          <!-- Jeevan -->
+          <div class="bg-white p-5 rounded-2xl border-2 border-ammavanBrown shadow-brutal-sm">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-amber-100 border border-munduGold flex items-center justify-center text-xl font-bold text-munduGoldDark">
+                J
+              </div>
+              <div>
+                <h3 class="font-extrabold text-base text-ammavanBrown">jeevan</h3>
+                <p class="text-xs font-mono text-zinc-500">Member • GEC Thrissur</p>
+              </div>
+            </div>
+            <p class="text-xs text-zinc-600 mt-3 leading-relaxed">
+              Sprite asset creation, transparent frame processing, typewriter bubble geometry, and offline fallback quote curation.
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Event recognition & Badges -->
+        <div class="mt-10 pt-8 border-t border-amber-200/60 flex flex-wrap items-center justify-center gap-4">
+          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border-2 border-ammavanBrown text-xs font-bold font-mono shadow-sm">
+            <i class="fa-solid fa-heart text-red-500"></i> Made at TinkerHub Useless Projects 3.0
+          </span>
+          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border-2 border-ammavanBrown text-xs font-bold font-mono shadow-sm">
+            📍 GEC Thrissur, Kerala
+          </span>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t-2 border-ammavanBrown bg-white py-10 px-6 text-center text-xs text-zinc-500 font-mono">
+    <div class="max-w-6xl mx-auto space-y-2">
+      <p class="font-bold text-ammavanBrown text-sm">
+        Portable Ammavan (AaaS) — Guaranteed to destroy hostel inner peace.
+      </p>
+      <p>Built with ❤️ by The Procrastination Police for TinkerHub Useless Projects</p>
+      <p class="text-zinc-400 text-[11px] pt-2">
+        Disclaimer: No actual Malayali Ammavans were harmed during the development of this virtual companion.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Scenario data dictionary for live sandbox
+    const scenarios = {
+      netflix: {
+        sprite: "👴🏽",
+        state: "STATE: JUDGING_FOREGROUND",
+        window: "Window: chrome.exe (Netflix India)",
+        source: "Gemini 2.5 Flash",
+        sourceColor: "bg-emerald-100 text-emerald-800",
+        quote: "“Raathri 2:30 AM... Netflix aanalle? Ninte appan ithu valla ariyunnundo da shavame? Backlog ezhuthi theerkkan valla planum undo?”",
+        trans: "Transl: '2:30 AM... Watching Netflix? Does your father know about this? Any plans to clear your backlogs?'"
+      },
+      gaming: {
+        sprite: "🧐",
+        state: "STATE: MORAL_DISAPPROVAL",
+        window: "Window: valorant.exe (Riot Client)",
+        source: "Gemini 2.5 Flash",
+        sourceColor: "bg-emerald-100 text-emerald-800",
+        quote: "“Kandu kandu... Headshot adichu nadanno! Ninte college placement vannappol ithupole clutch edukkan pattumo ninakku?”",
+        trans: "Transl: 'I see... Playing games and hitting headshots! Will you clutch placements like this when campus recruitment arrives?'"
+      },
+      drag: {
+        sprite: "😡",
+        state: "STATE: FURIOUS_DRAGGED",
+        window: "Event: LeftMouseDrag (Win32 Captured)",
+        source: "Win32 Intercept",
+        sourceColor: "bg-red-100 text-red-800",
+        quote: "“Videda enne! Mouse-il ketti valakkan njan entha ninte paniyano da panna chekka? Kayyinnu videda!”",
+        trans: "Transl: 'Let go of me! Am I your servant for you to drag me around with your mouse? Release me!'"
+      },
+      idle: {
+        sprite: "😴",
+        state: "STATE: SNOOZING_IDLE (30s+)",
+        window: "Status: Cursor Inactive (idle_timer)",
+        source: "State Machine",
+        sourceColor: "bg-blue-100 text-blue-800",
+        quote: "“Zzz... Cursor anangathe kandappozhe njan karuthi, valiya thalavedhana vannu padichu thalarnnu kidakkukayanennu... veruthe phone-il scroll cheyyuvano?”",
+        trans: "Transl: 'Zzz... Cursor hasn't moved. I thought you fell asleep studying hard... or are you just doom-scrolling on your phone?'"
+      },
+      offline: {
+        sprite: "📻",
+        state: "STATE: OFFLINE_FALLBACK",
+        window: "Network: Offline (Hardcoded Dict)",
+        source: "Local Storage Fallback",
+        sourceColor: "bg-amber-100 text-amber-800",
+        quote: "“Net poyappol ninte kaliyum theernnu alle? Poyi randaksharam vayikkeda pillerukale, kalathu paranjal kelkkilla!”",
+        trans: "Transl: 'Internet dropped and your fun is over, huh? Go open a book and study for once, you never listen!'"
+      }
+    };
+
+    let typingTimeout;
+
+    // Typewriter effect function
+    function typeEffect(text, elementId) {
+      clearTimeout(typingTimeout);
+      const element = document.getElementById(elementId);
+      element.innerHTML = "";
+      let i = 0;
+
+      function typeChar() {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i);
+          i++;
+          typingTimeout = setTimeout(typeChar, 24);
+        }
+      }
+      typeChar();
+    }
+
+    // Switch scenario logic
+    function setScenario(key) {
+      const data = scenarios[key];
+      if (!data) return;
+
+      // Update active button state styling
+      document.querySelectorAll('.sim-btn').forEach(btn => {
+        btn.classList.remove('bg-amber-100');
+        btn.classList.add('bg-white');
+      });
+      const activeBtn = document.getElementById('btn-' + key);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-white');
+        activeBtn.classList.add('bg-amber-100');
+      }
+
+      // Update avatar sprite and shake slightly
+      const spriteBox = document.getElementById('ammavanSpriteBox');
+      spriteBox.innerText = data.sprite;
+      spriteBox.classList.add('scale-110');
+      setTimeout(() => spriteBox.classList.remove('scale-110'), 250);
+
+      // Update badge states
+      document.getElementById('ammavanStateBadge').innerText = data.state;
+      document.getElementById('detectedWindowTag').innerText = data.window;
+      
+      const sourceTag = document.getElementById('sourceEngineTag');
+      sourceTag.innerText = data.source;
+      sourceTag.className = `text-[10px] font-mono px-2 py-0.5 rounded font-semibold ${data.sourceColor}`;
+
+      // Trigger typewriter scolding
+      typeEffect(data.quote, 'typewriterText');
+      document.getElementById('translationText').innerText = data.trans;
+    }
+  </script>
+</body>
+</html>
